@@ -1,0 +1,210 @@
+@import './variables.scss';
+@import './mixins.scss';
+
+// 全局工具类
+
+// 文本对齐
+.text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+// 文本颜色
+.text-primary {
+    color: $primary-color;
+}
+
+.text-success {
+    color: $success-color;
+}
+
+.text-warning {
+    color: $warning-color;
+}
+
+.text-danger {
+    color: $danger-color;
+}
+
+.text-info {
+    color: $info-color;
+}
+
+// 文本大小
+.text-small {
+    font-size: $font-size-small;
+}
+
+.text-base {
+    font-size: $font-size-base;
+}
+
+.text-large {
+    font-size: $font-size-large;
+}
+
+// 文本省略
+.ellipsis {
+    @include ellipsis;
+}
+
+.ellipsis-2 {
+    @include ellipsis-multi(2);
+}
+
+.ellipsis-3 {
+    @include ellipsis-multi(3);
+}
+
+// Flex 布局
+.flex {
+    display: flex;
+}
+
+.flex-center {
+    @include flex-center;
+}
+
+.flex-between {
+    @include flex-between;
+}
+
+.flex-column {
+    @include flex-column;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+// 间距
+.m-0 {
+    margin: 0;
+}
+
+.mt-8 {
+    margin-top: $spacing-small;
+}
+
+.mt-16 {
+    margin-top: $spacing-base;
+}
+
+.mt-24 {
+    margin-top: $spacing-large;
+}
+
+.mb-8 {
+    margin-bottom: $spacing-small;
+}
+
+.mb-16 {
+    margin-bottom: $spacing-base;
+}
+
+.mb-24 {
+    margin-bottom: $spacing-large;
+}
+
+.p-0 {
+    padding: 0;
+}
+
+.p-8 {
+    padding: $spacing-small;
+}
+
+.p-16 {
+    padding: $spacing-base;
+}
+
+.p-24 {
+    padding: $spacing-large;
+}
+
+// 卡片
+.card {
+    @include card;
+}
+
+// 禁用
+.disabled {
+    @include disabled;
+}
+
+// 清除浮动
+.clearfix {
+    @include clearfix;
+}
+
+// 隐藏
+.hidden {
+    display: none;
+}
+
+// 响应式隐藏
+@include respond-to('sm') {
+    .hidden-sm {
+        display: none;
+    }
+}
+
+@include respond-to('md') {
+    .hidden-md {
+        display: none;
+    }
+}
+
+// 动画
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s;
+}
+
+.slide-in-down {
+    animation: slideInDown 0.3s;
+}
+
+.slide-in-up {
+    animation: slideInUp 0.3s;
+}

@@ -1,0 +1,136 @@
+// 全局样式混入
+
+// 清除浮动
+@mixin clearfix {
+    &::after {
+        content: '';
+        display: table;
+        clear: both;
+    }
+}
+
+// 文本溢出省略
+@mixin ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+// 多行文本溢出省略
+@mixin ellipsis-multi($lines: 2) {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: $lines;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+// Flex 布局
+@mixin flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@mixin flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+@mixin flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+// 绝对居中
+@mixin absolute-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+// 响应式
+@mixin respond-to($breakpoint) {
+    @if $breakpoint =='xs' {
+        @media (max-width: 480px) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint =='sm' {
+        @media (max-width: 768px) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint =='md' {
+        @media (max-width: 992px) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint =='lg' {
+        @media (max-width: 1200px) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint =='xl' {
+        @media (min-width: 1920px) {
+            @content;
+        }
+    }
+}
+
+// 卡片样式
+@mixin card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+}
+
+// 按钮悬停效果
+@mixin button-hover($color) {
+    transition: all 0.3s;
+
+    &:hover {
+        background: lighten($color, 5%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba($color, 0.3);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+// 禁用状态
+@mixin disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+// 滚动条样式
+@mixin scrollbar($width: 8px, $thumb-color: #dcdfe6, $track-color: #f5f7fa) {
+    &::-webkit-scrollbar {
+        width: $width;
+        height: $width;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: $thumb-color;
+        border-radius: calc($width / 2);
+
+        &:hover {
+            background: darken($thumb-color, 10%);
+        }
+    }
+
+    &::-webkit-scrollbar-track {
+        background: $track-color;
+    }
+}

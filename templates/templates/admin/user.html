@@ -1,0 +1,258 @@
+<title>用户</title>
+<#include "../common/common.html" />
+
+<!-- 树形表格插件 -->
+<script type="text/javascript" src="${request.contextPath}/custom/jquery.tree-table.js"></script>
+<style>
+	#_tree tbody tr {
+		cursor: pointer;
+	}
+
+	#_tree tbody tr.selected {
+		background-color: #d9edf7 !important;
+	}
+
+	#_tree tbody tr:hover {
+		background-color: #f5f5f5;
+	}
+</style>
+
+<div class="row">
+	<div class="col-xs-12 col-sm-3">
+		<table id="_tree" class="table table-striped table-bordered table-hover" style="width:100%;"></table>
+	</div>
+	<div class="col-xs-12 col-sm-9">
+		<div class="widget-box">
+			<div class="widget-header widget-header-small">
+				<h5 class="widget-title lighter">搜索栏</h5>
+			</div>
+
+			<div class="widget-body">
+				<div class="widget-main">
+					<form id="_form" class="form-inline">
+						<input id="_officeId" type="hidden" name="officeId" value="">
+						<label>
+							<label class="control-label" for="form-field-1"> 登录名： </label>
+							<input name="account" type="text" class="form-data input-medium search-data">
+						</label>
+						<label>
+							<label class="control-label" for="form-field-1"> 姓名： </label>
+							<input name="name" type="text" class="form-data input-medium search-data">
+						</label>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div>
+			<div class="dataTables_wrapper form-inline no-footer">
+				<table id="_table" class="table table-striped table-bordered table-hover dataTable no-footer">
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- page specific plugin scripts -->
+<script type="text/javascript">
+
+	// 不需要额外加载脚本,树形表格插件已在head中引入
+
+	$('.page-content-area').ace_ajax('loadScripts', scripts, function () {
+		jQuery(function ($) {
+			// 列表
+			var $table = $("#_table").table({
+				url: "${request.contextPath}/admin/user/list",
+				formId: "_form",
+				tools: [
+					{
+						text: '新增', clazz: 'btn-info', icon: 'fa fa-plus-circle blue', permission: '/admin/user/edit', handler: function () {
+							$.aceRedirect("${request.contextPath}/admin/user/edit");
+						}
+					},
+					{
+						text: '禁用', clazz: 'btn-warning', icon: 'fa fa-lock orange', permission: '/admin/user/enable', handler: function () {
+							$table.ajaxEnable({ url: "${request.contextPath}/admin/user/enable" }, false);
+						}
+					},
+					{
+						text: '启用', clazz: 'btn-success', icon: 'fa fa-unlock green', permission: '/admin/user/enable', handler: function () {
+							$table.ajaxEnable({ url: "${request.contextPath}/admin/user/enable" }, true);
+						}
+					},
+					{
+						text: '删除', clazz: 'btn-danger', icon: 'fa fa-trash-o red', permission: '/admin/user/delete', handler: function () {
+							$table.ajaxDelete({
+								confirm: "删除用户会关联对应的角色、权限，确认要删除?",
+								url: "${request.contextPath}/admin/user/delete"
+							});
+						}
+					},
+					{
+						text: '重置密码', clazz: 'btn-default', icon: 'fa fa-key grey', permission: '/admin/user/reset-password', handler: function () {
+							$table.ajax({
+								url: "${request.contextPath}/admin/user/reset-password",
+								confirm: "确认重置密码?",
+								after: function () {
+									$table.reload();
+								}
+							});
+						}
+					},
+					{
+						text: '分配角色', clazz: 'btn-default', icon: 'fa fa-cog grey', permission: '/admin/user-role', handler: function () {
+							if ($table.validateSelected(true)) {
+								$.aceRedirect("${request.contextPath}/admin/user-role?userId=" + $table.getSelectedItemKeys("id"));
+							}
+						}
+					}
+				],
+				columns: [
+					{ field: 'id', hide: true },
+					{ field: 'isEnable', hide: true },
+					{ field: 'name', title: '姓名', align: 'left' },
+					{ field: 'account', title: '登录名', align: 'left' },
+					{ field: 'lastLoginTime', title: '最后登录时间', mobileHide: true },
+					{
+						field: 'isEnableStr', title: '是否启用', replace: function (d) {
+							if (d.isEnable)
+								return "<span class='label label-sm label-success'>是</span>";
+							else
+								return "<span class='label label-sm label-warning'>否</span>";
+						}
+					}
+				],
+				operate: [
+					{
+						text: '修改', clazz: 'blue', icon: 'fa fa-pencil', permission: '/admin/user/edit', handler: function (d, i) {
+							$.aceRedirect("${request.contextPath}/admin/user/edit?id=" + d.id);
+						}
+					},
+					{
+						text: '禁用', clazz: 'orange', icon: 'fa fa-lock', permission: '/admin/user/enable',
+						handler: function () {
+							$table.ajaxEnable({ url: "${request.contextPath}/admin/user/enable" }, false);
+						},
+						show: function (d) {
+							return d.isEnable;
+						}
+					},
+					{
+						text: '启用', clazz: 'green', icon: 'fa fa-unlock', permission: '/admin/user/enable',
+						handler: function () {
+							$table.ajaxEnable({ url: "${request.contextPath}/admin/user/enable" }, true);
+						},
+						show: function (d) {
+							return !d.isEnable;
+						}
+					},
+					{
+						text: '删除', clazz: 'red', icon: 'fa fa-trash-o', permission: '/admin/user/delete', handler: function (d, i) {
+							$table.ajaxDelete({
+								confirm: "删除用户会关联对应的角色、权限，确认要删除?",
+								url: "${request.contextPath}/admin/user/delete"
+							});
+						}
+					},
+					{
+						text: '重置密码', clazz: 'grey', icon: 'fa fa-key', permission: '/admin/user/reset-password', handler: function (d, i) {
+							$table.ajax({
+								url: "${request.contextPath}/admin/user/reset-password",
+								confirm: "确认重置密码?",
+								after: function () {
+									$table.reload();
+								}
+							});
+						}
+					},
+					{
+						text: '分配角色', clazz: 'grey', icon: 'fa fa-cog', permission: '/admin/user-role', handler: function (d, i) {
+							$.aceRedirect("${request.contextPath}/admin/user-role?userId=" + d.id);
+						}
+					}
+				],
+				after: function () {
+					// 权限处理
+					$.permission();
+				}
+			});
+
+			//搜索
+			$(".search-data").keyup(function () {
+				$table.search();
+			});
+
+			// 取消
+			$("#_cancel").click(function () {
+				$table.search();
+			});
+
+			// 初始化机构树形表格
+			var $tree = $("#_tree");
+			var treeTable = $tree.treeTable({
+				idField: 'id',
+				parentIdField: 'parentId',
+				treeField: 'name',
+				expandLevel: -1  // 全部展开
+			});
+
+			// 创建表格头部
+			function createTreeHeader() {
+				var $thead = $('<thead></thead>');
+				var $tr = $('<tr></tr>');
+				$tr.append('<th style="text-align:left;">机构名称</th>');
+				$thead.append($tr);
+				$tree.append($thead);
+
+				// 创建 tbody
+				var $tbody = $('<tbody></tbody>');
+				$tree.append($tbody);
+			}
+
+			// 加载机构树数据
+			function loadTreeData() {
+				$.ajax({
+					type: "GET",
+					url: "${request.contextPath}/admin/office/tree",
+					dataType: "json",
+					success: function (response) {
+						if (response && response.data) {
+							treeTable.renderTree(response.data, {
+								checkbox: { hide: true },
+								index: { hide: true },
+								columns: [{ field: 'name', title: '机构名称' }],
+								operate: []
+							});
+
+							// 绑定行点击事件
+							$tree.find('tbody').on('click', 'tr', function (e) {
+								// 如果点击的是展开/收起图标,不触发过滤
+								if ($(e.target).hasClass('tree-toggle') || $(e.target).closest('.tree-toggle').length > 0) {
+									return;
+								}
+
+								var officeId = $(this).data('id');
+								if (officeId == undefined || officeId == null) {
+									$("#_officeId").val('');
+								} else {
+									$("#_officeId").val(officeId);
+								}
+								$table.search();
+
+								// 高亮选中行
+								$tree.find('tbody tr').removeClass('selected');
+								$(this).addClass('selected');
+							});
+						}
+					},
+					error: function (xhr, status, error) {
+						console.error('加载机构树失败:', error);
+					}
+				});
+			}
+
+			createTreeHeader();
+			loadTreeData();
+		});
+	});
+</script>
