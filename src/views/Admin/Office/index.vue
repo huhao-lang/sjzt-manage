@@ -80,7 +80,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Lock, Unlock, Delete } from '@element-plus/icons-vue'
 import { getOfficeTree, enableOffice, deleteOffice } from '@/api/office'
-import type { Office } from '@/types'
+import type { Office } from '@/types' 
 
 const router = useRouter()
 

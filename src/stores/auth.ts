@@ -57,12 +57,6 @@ export const useAuthStore = defineStore('auth', () => {
             expiresIn.value = res.expiresIn
             code.value = res.code || ''
 
-            // 设置 cookie
-            const expireDays = res.expiresIn / (24 * 60 * 60) // 转为天数
-            const expires = new Date(Date.now() + res.expiresIn * 1000).toUTCString()
-            document.cookie = `TGC=${res.tgt}; expires=${expires}; path=/`
-            document.cookie = `smart-sso-token=${res.accessToken}; expires=${expires}; path=/`
-
             // 构造用户信息
             userInfo.value = {
                 id: res.userId,

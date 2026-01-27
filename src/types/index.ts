@@ -260,20 +260,24 @@ export interface RolePermission {
 // ==================== 权限管理相关类型 ====================
 
 /**
- * 权限
+ * 权限/菜单
  */
 export interface Permission {
-    id: number
-    parentId: number | null
+    id: string
+    parentId: string | null
+    appId: string
     name: string
-    code: string
-    type: 'menu' | 'button'
-    url?: string
     icon?: string
+    url?: string
+    component?: string        // 组件路径（相对于 views 目录）
+    redirect?: string         // 重定向地址
+    perms?: string            // 权限标识
+    visible?: boolean         // 是否显示在菜单中
+    isCache?: boolean         // 是否缓存（keep-alive）
+    isFrame?: boolean         // 是否外链
     sort?: number
-    status: number
-    createTime: string
-    updateTime?: string
+    isMenu: boolean
+    isEnable: boolean
     children?: Permission[]
 }
 

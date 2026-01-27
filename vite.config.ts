@@ -21,12 +21,24 @@ export default defineConfig(({ mode }) => {
                 '/sso': {
                     target: proxyTarget,
                     changeOrigin: true,
-                    rewrite: (path) => path
+                    rewrite: (path) => path,
+                    cookieDomainRewrite: '',
+                    cookiePathRewrite: '/'
                 },
                 '/admin': {
                     target: proxyTarget,
                     changeOrigin: true,
-                    rewrite: (path) => path
+                    rewrite: (path) => path,
+                    cookieDomainRewrite: '',
+                    cookiePathRewrite: '/'
+                },
+                '/code-verify': {
+                    target: proxyTarget,
+                    changeOrigin: true,
+                    rewrite: () => '/',
+                    cookieDomainRewrite: '',
+                    cookiePathRewrite: '/',
+                    autoRewrite: true
                 }
             }
         },

@@ -73,6 +73,5 @@ export const getCurrentUser = () => {
  * 验证授权码
  */
 export const verifyCode = (code: string) => {
-    const baseUrl = import.meta.env.VITE_API_PROXY_TARGET
-    return fetch(`${baseUrl}/?code=${code}`)
+  return request.get('/sso/verifyCode', { params: { code } })
 }

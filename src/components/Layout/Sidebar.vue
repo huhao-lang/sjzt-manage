@@ -45,6 +45,7 @@ import { useRoute } from 'vue-router'
 import { Expand, Fold } from '@element-plus/icons-vue'
 import type { MenuItem } from '@/types'
 import { getMenuList } from '@/api/menu'
+import storage from '@/utils/storage'
 
 interface Props {
   collapsed: boolean
@@ -69,7 +70,9 @@ const activeMenu = computed(() => route.path)
 // 加载菜单
 const loadMenu = async () => {
   try {
-    const data = await getMenuList()
+    const data = await getMenuList({
+      code:storage.get('code')
+    })
     menuList.value = buildMenuTree(data)
   } catch (error) {
     console.error('加载菜单失败:', error)

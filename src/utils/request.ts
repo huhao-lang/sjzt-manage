@@ -103,7 +103,7 @@ class Request {
     /**
      * GET 请求
      */
-    get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
+  get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
         return service.get(url, config)
     }
 
