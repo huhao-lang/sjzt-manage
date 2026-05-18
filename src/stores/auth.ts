@@ -13,10 +13,8 @@ export const useAuthStore = defineStore('auth', () => {
 
     // 状态
     const token = ref<string>('')
-    const refreshToken = ref<string>('')
     const userInfo = ref<UserInfo | null>(null)
     const expiresIn = ref<number>(0)
-    const code = ref<string>('')
 
     // 计算属性
     const isLoggedIn = computed(() => !!token.value)
@@ -29,12 +27,10 @@ export const useAuthStore = defineStore('auth', () => {
      */
     const init = () => {
         const savedToken = storage.get<string>('token')
-        const savedRefreshToken = storage.get<string>('refreshToken')
         const savedUserInfo = storage.get<UserInfo>('userInfo')
 
         if (savedToken && savedUserInfo) {
             token.value = savedToken
-            refreshToken.value = savedRefreshToken || ''
             userInfo.value = savedUserInfo
         }
     }
@@ -46,33 +42,23 @@ export const useAuthStore = defineStore('auth', () => {
         try {
             const res = await authApi.login(params)
 
-            // 打印后端设置的 cookie
-            console.log('===== 后端设置的 Cookie =====')
-            console.log(document.cookie)
-            console.log('=============================')
-
-            // 存储 token（cookie 由后端通过 Set-Cookie 自动设置）
+            // 存储 token
             token.value = res.accessToken
-            refreshToken.value = res.refreshToken
-            expiresIn.value = res.expiresIn
-            code.value = res.code || ''
+            expiresIn.value = parseInt(res.expiresIn) || 7200
 
             // 构造用户信息
             userInfo.value = {
                 id: res.userId,
-                username: res.tokenUser.username,
+                username: params.username,
                 name: res.name,
                 dept: res.dept,
-                phone: res.tokenUser.phone,
-                idNumber: res.tokenUser.idNumber
+                officeId: res.officeId
             }
 
             // 持久化存储（根据 expiresIn 设置过期时间）
-            const expireTime = res.expiresIn * 1000 // 转为毫秒
+            const expireTime = expiresIn.value * 1000 // 转为毫秒
             storage.set('token', token.value, expireTime)
-            storage.set('refreshToken', refreshToken.value, expireTime)
             storage.set('userInfo', userInfo.value, expireTime)
-            storage.set('code', code.value, expireTime)
 
             return res
         } catch (error) {
@@ -85,24 +71,27 @@ export const useAuthStore = defineStore('auth', () => {
      */
     const logout = async () => {
         try {
-            // 调用登出接口（后端会清除 cookie）
+            // 调用登出接口
             await authApi.logout()
         } catch (error) {
             console.error('登出接口调用失败:', error)
         } finally {
             // 清除状态
             token.value = ''
-            refreshToken.value = ''
             userInfo.value = null
             expiresIn.value = 0
 
             // 清除本地存储
             storage.remove('token')
-            storage.remove('refreshToken')
             storage.remove('userInfo')
 
-            // 跳转到登录页
-            router.push('/login')
+            // 重置路由状态（延迟导入避免循环依赖）
+            const { useRouteStore } = await import('./route')
+            const routeStore = useRouteStore()
+            routeStore.resetRoutes()
+
+            // 跳转到本地登录页（带标记避免跳SSO）
+            router.push({ path: '/login', query: { ssoFailed: '1' } })
         }
     }
 
@@ -111,10 +100,21 @@ export const useAuthStore = defineStore('auth', () => {
      */
     const getCurrentUser = async () => {
         try {
-            const data = await authApi.getCurrentUser()
-            userInfo.value = data
+            const userId = userInfo.value?.id
+            if (!userId) {
+                throw new Error('用户未登录')
+            }
+            const data = await authApi.getCurrentUser(userId)
+            // 合并数据，保留登录时的基础信息
+            userInfo.value = {
+                ...userInfo.value,
+                ...data,
+                // 统一字段名
+                username: data.account || userInfo.value?.username,
+                email: data.companyEmail || data.email
+            }
             storage.set('userInfo', userInfo.value, 7 * 24 * 60 * 60 * 1000)
-            return data
+            return userInfo.value
         } catch (error) {
             throw error
         }
@@ -151,10 +151,8 @@ export const useAuthStore = defineStore('auth', () => {
     return {
         // 状态
         token,
-        refreshToken,
         userInfo,
         expiresIn,
-        code,
         // 计算属性
         isLoggedIn,
         username,

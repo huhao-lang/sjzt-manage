@@ -2,7 +2,7 @@
   <div class="user-management">
     <el-row :gutter="16">
       <!-- 左侧机构树 -->
-      <el-col :span="4">
+      <el-col :span="5">
         <el-card class="tree-card">
           <template #header>
             <span>机构</span>
@@ -15,12 +15,16 @@
             default-expand-all
             highlight-current
             @node-click="handleNodeClick"
-          />
+          >
+            <template #empty>
+              <span class="tree-empty">暂无数据</span>
+            </template>
+          </el-tree>
         </el-card>
       </el-col>
 
       <!-- 右侧内容 -->
-      <el-col :span="20">
+      <el-col :span="19">
         <!-- 搜索栏 -->
         <el-card class="search-card">
           <el-form :model="searchForm" :inline="true">
@@ -59,10 +63,6 @@
             <el-icon><Key /></el-icon>
             重置密码
           </el-button>
-          <el-button @click="handleBatchAssignRole">
-            <el-icon><Setting /></el-icon>
-            分配角色
-          </el-button>
         </el-card>
 
         <!-- 表格 -->
@@ -85,7 +85,7 @@
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="280" fixed="right">
+            <el-table-column label="操作" width="320" fixed="right">
               <template #default="{ row }">
                 <el-button type="primary" link size="small" @click="handleEdit(row)">
                   修改
@@ -117,6 +117,9 @@
                 <el-button type="info" link size="small" @click="handleAssignRole(row)">
                   分配角色
                 </el-button>
+                <el-button type="primary" link size="small" @click="handlePush(row)">
+                  推送
+                </el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -128,6 +131,8 @@
               v-model:page-size="pagination.size"
               :total="pagination.total"
               :page-sizes="[10, 20, 50, 100]"
+              :hide-on-single-page="false"
+              background
               layout="total, sizes, prev, pager, next, jumper"
               @size-change="loadData"
               @current-change="loadData"
@@ -136,20 +141,42 @@
         </el-card>
       </el-col>
     </el-row>
+
+    <!-- 新增/编辑弹窗 -->
+    <UserEditDialog
+      ref="userEditDialogRef"
+      v-model:visible="editDialogVisible"
+      :office-tree="officeTree"
+      @success="loadData"
+    />
+
+    <!-- 分配角色弹窗 -->
+    <AssignRoleDialog
+      ref="assignRoleDialogRef"
+      v-model:visible="roleDialogVisible"
+      @success="loadData"
+    />
+
+    <!-- 推送用户弹窗 -->
+    <UserPushDialog
+      ref="userPushDialogRef"
+      v-model:visible="pushDialogVisible"
+      @success="loadData"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Lock, Unlock, Delete, Key, Setting } from '@element-plus/icons-vue'
-import { getUserList, enableUser, deleteUser, resetPassword } from '@/api/user'
-import { getOfficeTree } from '@/api/office'
+import { Plus, Lock, Unlock, Delete, Key } from '@element-plus/icons-vue'
+import { getUserList, enableUser, deleteUser, resetPassword, getUserOfficeTree } from '@/api/user'
 import type { User, Office } from '@/types'
-
-const router = useRouter()
-
+import UserEditDialog from './components/UserEditDialog.vue'
+import AssignRoleDialog from './components/AssignRoleDialog.vue'
+import UserPushDialog from './components/UserPushDialog.vue'
+import { useAuthStore } from '@/stores/auth'
+const authStore=useAuthStore()
 // 机构树
 const treeRef = ref()
 const officeTree = ref<Office[]>([])
@@ -174,15 +201,60 @@ const pagination = reactive({
   total: 0
 })
 
+// 弹窗相关
+const editDialogVisible = ref(false)
+const userEditDialogRef = ref()
+const roleDialogVisible = ref(false)
+const assignRoleDialogRef = ref()
+const pushDialogVisible = ref(false)
+const userPushDialogRef = ref()
+
 // 获取选中的ID
 const getSelectedIds = () => {
   return selectedRows.value.map(row => row.id).join(',')
 }
 
+// 扁平数据转树形结构
+const listToTree = (list: any[]) => {
+  const validList = list.filter(item => item.id !== null && item.id !== undefined)
+
+  const map: Record<string, any> = {}
+  const roots: any[] = []
+
+  validList.forEach(item => {
+    map[item.id] = { ...item, children: [] }
+  })
+
+  validList.forEach(item => {
+    const node = map[item.id]
+    const parentId = item.parentId
+
+    if (parentId === '-1' || parentId === null || parentId === undefined || !map[parentId]) {
+      roots.push(node)
+    } else {
+      map[parentId].children.push(node)
+    }
+  })
+
+  const removeEmptyChildren = (nodes: any[]) => {
+    nodes.forEach(node => {
+      if (node.children.length === 0) {
+        delete node.children
+      } else {
+        removeEmptyChildren(node.children)
+      }
+    })
+  }
+  removeEmptyChildren(roots)
+
+  return roots
+}
+
 // 加载机构树
 const loadOfficeTree = async () => {
   try {
-    officeTree.value = await getOfficeTree()
+    const list = await getUserOfficeTree()
+    officeTree.value = listToTree(list || [])
   } catch (error) {
     console.error('加载机构树失败:', error)
     officeTree.value = []
@@ -198,10 +270,11 @@ const loadData = async () => {
       size: pagination.size,
       officeId: searchForm.officeId || undefined,
       account: searchForm.account || undefined,
-      name: searchForm.name || undefined
+      name: searchForm.name || undefined,
+      currentUserId: authStore.userInfo.id
     })
     tableData.value = res.records
-    pagination.total = res.total
+    pagination.total = Number(res.total) || 0
   } catch (error: any) {
     ElMessage.error(error.message || '加载数据失败')
     tableData.value = []
@@ -240,12 +313,12 @@ const handleReset = () => {
 
 // 新增
 const handleAdd = () => {
-  router.push('/admin/user/edit')
+  userEditDialogRef.value?.open()
 }
 
 // 编辑
 const handleEdit = (row: User) => {
-  router.push(`/admin/user/edit?id=${row.id}`)
+  userEditDialogRef.value?.open(row.id.toString())
 }
 
 // 单个启用
@@ -308,7 +381,12 @@ const handleResetPassword = async (row: User) => {
 
 // 分配角色
 const handleAssignRole = (row: User) => {
-  router.push(`/admin/user-role?userId=${row.id}`)
+  assignRoleDialogRef.value?.open(row.id.toString())
+}
+
+// 推送用户
+const handlePush = (row: User) => {
+  userPushDialogRef.value?.open(row.id.toString())
 }
 
 // 批量启用
@@ -387,16 +465,6 @@ const handleBatchResetPassword = async () => {
       ElMessage.error(error.message || '重置密码失败')
     }
   }
-}
-
-// 批量分配角色
-const handleBatchAssignRole = () => {
-  const ids = getSelectedIds()
-  if (!ids) {
-    ElMessage.warning('请至少选择一条记录')
-    return
-  }
-  router.push(`/admin/user-role?userId=${ids}`)
 }
 
 onMounted(() => {

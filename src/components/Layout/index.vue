@@ -10,7 +10,7 @@
       <!-- 主内容区 -->
       <div class="main-content" :class="{ 'sidebar-collapsed': sidebarCollapsed }">
         <!-- 面包屑导航 -->
-        <Breadcrumb />
+        <!-- <Breadcrumb /> -->
 
         <!-- 页面内容 -->
         <div class="page-content">
@@ -54,6 +54,8 @@ const toggleSidebar = () => {
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+  background: url('@/assets/images/bg.jpg') no-repeat center center;
+  background-size: 100%;
 }
 
 .main-container {
@@ -79,6 +81,5 @@ const toggleSidebar = () => {
   flex: 1;
   padding: 20px;
   overflow-y: auto;
-  background: #f0f2f5;
 }
 </style>

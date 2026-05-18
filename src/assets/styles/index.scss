@@ -208,3 +208,8 @@
 .slide-in-up {
     animation: slideInUp 0.3s;
 }
+
+// Element Plus 组件覆盖
+.el-card {
+    background-color: rgba(255, 255, 255, 1) !important;
+}

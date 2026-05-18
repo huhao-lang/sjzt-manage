@@ -17,7 +17,7 @@ export const validatePhone = (phone: string): boolean => {
 /**
  * 验证身份证号格式
  */
-export const validateIdCard = (idCard: string): boolean => {
+export const validateIdNumber = (idCard: string): boolean => {
     const reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/
     return reg.test(idCard)
 }

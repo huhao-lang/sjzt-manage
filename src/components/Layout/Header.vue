@@ -2,7 +2,7 @@
   <div class="header-container">
     <div class="header-left">
       <div class="logo">
-        <span class="title">统一身份认证管理系统</span>
+        <img :src="logoImg" alt="西藏交发" />
       </div>
     </div>
 
@@ -61,6 +61,7 @@ import { ElMessageBox } from 'element-plus'
 import { Bell, ArrowDown, User, Setting, SwitchButton } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 import defaultAvatar from '@/assets/images/avatars/user.jpg'
+import logoImg from '@/assets/images/header/logo.png'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -108,10 +109,10 @@ const handleLogout = async () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 60px;
+  height: 80px;
   padding: 0 20px;
-  background: #fff;
-  border-bottom: 1px solid #e8e8e8;
+  // background: rgba(69,78,134, 0.3);
+  // border-bottom: 1px solid #e8e8e8;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
@@ -122,7 +123,7 @@ const handleLogout = async () => {
     gap: 12px;
 
     img {
-      height: 36px;
+      height: 70px;
     }
 
     .title {

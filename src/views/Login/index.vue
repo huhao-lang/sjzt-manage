@@ -16,20 +16,20 @@
         <!-- 表单标题 -->
         <div class="form-header">
           <h2 class="welcome-text">欢迎使用交发平台</h2>
-          <div class="login-method">{{ loginMethodText }}</div>
+          <!-- <div class="login-method">{{ loginMethodText }}</div> -->
         </div>
 
         <!-- 二维码/账号切换图标 -->
-        <div class="qr-code-icon" :title="switchIconTitle" @click="toggleLoginMethod">
+        <!-- <div class="qr-code-icon" :title="switchIconTitle" @click="toggleLoginMethod">
           <img :src="switchIconSrc" alt="切换登录方式" />
-        </div>
+        </div> -->
 
         <!-- 账号密码登录表单 -->
-        <AccountLogin v-show="loginMethod === 'account'" :redirect-uri="redirectUri" :client-id="clientId" />
+        <AccountLogin :redirect-uri="redirectUri" :client-id="clientId" />
 
         <!-- 二维码登录 -->
-        <QRLogin v-show="loginMethod === 'qrcode'" :redirect-uri="redirectUri" :client-id="clientId"
-          @switch-to-account="switchToAccount" />
+        <!-- <QRLogin v-show="loginMethod === 'qrcode'" :redirect-uri="redirectUri" :client-id="clientId"
+          @switch-to-account="switchToAccount" /> -->
       </div>
     </div>
 
@@ -108,9 +108,8 @@ onMounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: url('@/assets/images/login/bg.png') no-repeat center center;
   background-size: cover;
-  background-position: center;
   z-index: 0;
 
   &::after {
@@ -146,8 +145,8 @@ onMounted(() => {
 .login-form-container {
   position: absolute;
   top: 50%;
-  right: 10%;
-  transform: translateY(-50%);
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 10;
 
   .login-form {

@@ -4,8 +4,8 @@ import type { Permission } from '@/types'
 /**
  * 获取权限树
  */
-export const getPermissionTree = (appId?: string) => {
-    return request.get<Permission[]>('/admin/permission/tree', { params: { appId } })
+export const getPermissionTree = (params?: { name?: string; roleId?: string }) => {
+    return request.get<Permission[]>('/admin/permission/tree', { params })
 }
 
 /**
@@ -32,6 +32,6 @@ export const enablePermission = (ids: string, isEnable: boolean) => {
 /**
  * 删除权限
  */
-export const deletePermission = (id: string, appId: string) => {
-    return request.post('/admin/permission/delete', { id, appId })
+export const deletePermission = (id: string) => {
+    return request.post('/admin/permission/delete', { id })
 }

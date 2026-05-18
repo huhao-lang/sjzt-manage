@@ -5,9 +5,10 @@ import vue from '@vitejs/plugin-vue'
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd())
-    const proxyTarget = env.VITE_API_PROXY_TARGET || 'http://192.168.0.200:8085'
+    const proxyTarget = env.VITE_API_PROXY_TARGET
 
     return {
+        base: mode === 'production' ? '/bg-manage/' : '/',
         plugins: [vue()],
         resolve: {
             alias: {
@@ -18,41 +19,20 @@ export default defineConfig(({ mode }) => {
             port: 3000,
             host: '0.0.0.0',
             proxy: {
-                '/sso': {
+                '/api': {
                     target: proxyTarget,
                     changeOrigin: true,
-                    rewrite: (path) => path,
+                    rewrite: (path) => path.replace(/^\/api/, ''),
                     cookieDomainRewrite: '',
                     cookiePathRewrite: '/'
-                },
-                '/admin': {
-                    target: proxyTarget,
-                    changeOrigin: true,
-                    rewrite: (path) => path,
-                    cookieDomainRewrite: '',
-                    cookiePathRewrite: '/'
-                },
-                '/code-verify': {
-                    target: proxyTarget,
-                    changeOrigin: true,
-                    rewrite: () => '/',
-                    cookieDomainRewrite: '',
-                    cookiePathRewrite: '/',
-                    autoRewrite: true
                 }
             }
         },
         build: {
-            outDir: 'dist',
+          outDir: 'dist/bg-manage',
             assetsDir: 'assets',
             sourcemap: false,
-            minify: 'terser',
-            terserOptions: {
-                compress: {
-                    drop_console: true,
-                    drop_debugger: true
-                }
-            },
+            minify: 'esbuild',
             rollupOptions: {
                 output: {
                     chunkFileNames: 'assets/js/[name]-[hash].js',

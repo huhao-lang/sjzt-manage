@@ -13,14 +13,9 @@
           </div>
 
           <el-descriptions :column="1" border>
-            <el-descriptions-item label="邮箱">{{ userInfo?.email || '-' }}</el-descriptions-item>
+            <el-descriptions-item label="邮箱">{{ userInfo?.email || userInfo?.companyEmail || '-' }}</el-descriptions-item>
             <el-descriptions-item label="手机号">{{ userInfo?.phone || '-' }}</el-descriptions-item>
-            <el-descriptions-item label="所属机构">{{ userInfo?.officeName || '-' }}</el-descriptions-item>
-            <el-descriptions-item label="状态">
-              <el-tag :type="userInfo?.status === 1 ? 'success' : 'danger'">
-                {{ userInfo?.status === 1 ? '正常' : '禁用' }}
-              </el-tag>
-            </el-descriptions-item>
+            <el-descriptions-item label="所属机构">{{ userInfo?.dept || '-' }}</el-descriptions-item>
           </el-descriptions>
         </el-card>
       </el-col>
@@ -63,10 +58,6 @@
           </template>
 
           <el-form ref="passwordFormRef" :model="passwordForm" :rules="passwordRules" label-width="100px">
-            <el-form-item label="原密码" prop="oldPassword">
-              <el-input v-model="passwordForm.oldPassword" type="password" placeholder="请输入原密码" show-password />
-            </el-form-item>
-
             <el-form-item label="新密码" prop="newPassword">
               <el-input v-model="passwordForm.newPassword" type="password" placeholder="请输入新密码" show-password />
             </el-form-item>
@@ -92,10 +83,11 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
+import { updateUser } from '@/api/user'
+import { savePassword } from '@/api/auth'
 import { validateEmail, validatePhone } from '@/utils/validator'
 
 const authStore = useAuthStore()
-
 const formRef = ref<FormInstance>()
 const passwordFormRef = ref<FormInstance>()
 const submitting = ref(false)
@@ -110,7 +102,6 @@ const formData = reactive({
 })
 
 const passwordForm = reactive({
-  oldPassword: '',
   newPassword: '',
   confirmPassword: ''
 })
@@ -152,7 +143,6 @@ const rules: FormRules = {
 }
 
 const passwordRules: FormRules = {
-  oldPassword: [{ required: true, message: '请输入原密码', trigger: 'blur' }],
   newPassword: [
     { required: true, message: '请输入新密码', trigger: 'blur' },
     { min: 6, max: 16, message: '密码长度为6-16位', trigger: 'blur' }
@@ -170,8 +160,13 @@ const handleUpdateProfile = async () => {
     await formRef.value.validate()
 
     submitting.value = true
+    await updateUser({
+      id: userInfo.value.id,
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone
+    })
 
-    // TODO: 调用实际接口
     ElMessage.success('保存成功')
     authStore.getCurrentUser()
   } catch (error: any) {
@@ -191,11 +186,14 @@ const handleUpdatePassword = async () => {
 
     passwordSubmitting.value = true
 
-    // TODO: 调用实际接口
-    ElMessage.success('密码修改成功,请重新登录')
-    
+    await savePassword({
+      newPassword: passwordForm.newPassword,
+      confirmPassword: passwordForm.confirmPassword
+    })
+
+    ElMessage.success('密码修改成功')
+
     // 重置表单
-    passwordForm.oldPassword = ''
     passwordForm.newPassword = ''
     passwordForm.confirmPassword = ''
     passwordFormRef.value.resetFields()
@@ -208,9 +206,17 @@ const handleUpdatePassword = async () => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
+  // 调用接口获取最新的用户信息
+  try {
+    await authStore.getCurrentUser()
+  } catch (error) {
+    console.error('获取用户信息失败:', error)
+  }
+
+  // 填充表单
   if (userInfo.value) {
-    formData.name = userInfo.value.name
+    formData.name = userInfo.value.name || ''
     formData.email = userInfo.value.email || ''
     formData.phone = userInfo.value.phone || ''
   }

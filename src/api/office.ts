@@ -5,7 +5,7 @@ import type { Office } from '@/types'
  * 获取机构树
  */
 export const getOfficeTree = () => {
-    return request.get<Office[]>('/admin/office/tree')
+    return request.get<Office[]>('/admin/user/office/tree')
 }
 
 /**

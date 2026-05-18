@@ -1,0 +1,1 @@
+import{r as e}from"./index-CHbtsh3G.js";const r=t=>e.get("/dept_audit/pending/list",{params:t}),d=t=>e.get(`/dept_audit/pending/${t}`),i=t=>e.post("/dept_audit/approve",t),s=t=>e.post("/dept_audit/reject",t);export{d as a,i as b,r as g,s as r};

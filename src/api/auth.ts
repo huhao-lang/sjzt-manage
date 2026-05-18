@@ -12,7 +12,7 @@ import type {
  * 账号密码登录
  */
 export const login = (params: LoginParams) => {
-  return request.postWithOption<LoginResponse>({ url: '/sso/login/login-rest', params })
+  return request.postWithOption<LoginResponse>({ url: '/auth/login', data: params })
 }
 
 /**
@@ -59,19 +59,26 @@ export const resetPassword = (params: ResetPasswordParams) => {
  * 退出登录
  */
 export const logout = () => {
-    return request.post('/sso/logout')
+    return request.post('/auth/logout')
 }
 
 /**
  * 获取当前用户信息
  */
-export const getCurrentUser = () => {
-    return request.get('/sso/user/current')
+export const getCurrentUser = (id: string) => {
+    return request.get('/admin/user/get', { params: { id } })
 }
 
 /**
- * 验证授权码
+ * 通过授权码获取accessToken
  */
-export const verifyCode = (code: string) => {
-  return request.get('/sso/verifyCode', { params: { code } })
+export const getAccessTokenByCode = (code: string) => {
+  return request.post('/sso/accessToken', null, { params: { code } })
+}
+
+/**
+ * 修改密码
+ */
+export const savePassword = (params: { newPassword: string; confirmPassword: string }) => {
+  return request.post('/profile/save-password', params)
 }

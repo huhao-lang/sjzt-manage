@@ -2,23 +2,31 @@ import request from '@/utils/request'
 import type { App } from '@/types'
 
 /**
- * 获取应用列表
+ * 获取应用列表（分页）
  */
-export const getAppList = (current: number = 1, size: number = 100) => {
-    return request.get<App[]>('/admin/app/list', { params: { current, size } })
-}
-
-/**
- * 获取单个应用详情
- */
-export const getApp = (id: number) => {
-    return request.get<App>('/admin/app/get', { params: { id } })
+export const getAppList = (params: {
+    current?: number
+    size?: number
+    name?: string
+}) => {
+    return request.get<{
+        records: App[]
+        total: number
+    }>('/admin/app/list', { params })
 }
 
 /**
  * 保存应用（新增/修改）
  */
-export const saveApp = (data: Partial<App>) => {
+export const saveApp = (data: {
+    id?: string
+    name: string
+    code: string
+    sort?: number
+    isEnable?: boolean
+    userSyncUrl?: string
+    deptSyncUrl?: string
+}) => {
     return request.post('/admin/app/save', data)
 }
 
@@ -34,4 +42,11 @@ export const enableApp = (ids: string, isEnable: boolean) => {
  */
 export const deleteApp = (ids: string) => {
     return request.post('/admin/app/delete', { ids })
+}
+
+/**
+ * 获取应用密钥信息
+ */
+export const getAppCredentials = (id: string) => {
+    return request.get<{ clientId: string; clientSecret: string }>('/admin/app/credentials', { params: { id } })
 }

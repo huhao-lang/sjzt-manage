@@ -144,15 +144,13 @@ const handleLogin = async () => {
     // 调用登录接口
     const res = await authStore.login({
       username: loginForm.username,
-      password: loginForm.password,
-      redirectUri: props.redirectUri || 'http://192.168.0.117:3000/#/admin/admin',
-      clientId: props.clientId || '1000'
+      password: loginForm.password
     })
 
     // 调用 /code 接口验证授权码（不等待返回）
-    if (res.code) {
-      verifyCode(res.code)
-    }
+    // if (res.code) {
+    //   verifyCode(res.code)
+    // }
 
     ElMessage.success('登录成功')
 

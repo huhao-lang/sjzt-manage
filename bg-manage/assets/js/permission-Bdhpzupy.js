@@ -1,0 +1,1 @@
+import{r as s}from"./index-CHbtsh3G.js";const i=e=>s.get("/admin/permission/tree",{params:e}),t=e=>s.get("/admin/permission/get",{params:{id:e}}),n=e=>s.post("/admin/permission/save",e),o=e=>s.post("/admin/permission/delete",{id:e});export{t as a,o as d,i as g,n as s};

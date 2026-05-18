@@ -2,8 +2,7 @@
   <div class="footer-container">
     <div class="footer-content">
       <span class="copyright">
-        <span class="brand">统一身份认证管理系统</span>
-        © 2024 星杓科技
+        <span class="brand">西藏交通发展集团有限公司</span>
       </span>
     </div>
   </div>

@@ -1,0 +1,1 @@
+import{r as p}from"./index-CHbtsh3G.js";const s=e=>p.get("/admin/app/list",{params:e}),n=e=>p.post("/admin/app/save",e),r=(e,t)=>p.post("/admin/app/enable",{ids:e,isEnable:t}),o=e=>p.post("/admin/app/delete",{ids:e}),d=e=>p.get("/admin/app/credentials",{params:{id:e}});export{d as a,o as d,r as e,s as g,n as s};

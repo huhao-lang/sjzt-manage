@@ -18,6 +18,43 @@ export const getUserList = (params: {
 }
 
 /**
+ * 获取用户详情
+ */
+export const getUserDetail = (id: string) => {
+    return request.get<User>('/admin/user/get', { params: { id } })
+}
+
+/**
+ * 新增用户
+ */
+export const createUser = (data: {
+    account: string
+    password: string
+    name: string
+    email?: string
+    phone?: string
+    idNumber?: string
+    officeId?: string
+}) => {
+    return request.post('/admin/user/save', data)
+}
+
+/**
+ * 更新用户
+ */
+export const updateUser = (data: {
+    id: string
+    name: string
+    email?: string
+    phone?: string
+    idNumber?: string
+    officeId?: string
+    isEnable?: boolean
+}) => {
+    return request.post('/admin/user/save', data)
+}
+
+/**
  * 保存用户（新增/修改）
  */
 export const saveUser = (data: Partial<User>) => {
@@ -63,5 +100,21 @@ export const getUserRoles = (userId: string) => {
  * 保存用户角色
  */
 export const saveUserRoles = (userId: string, roleIds: string[]) => {
-    return request.post('/admin/user-role/save', { userId, roleIds: roleIds.join(',') })
+    return request.post('/admin/user-role/save', null, {
+        params: { userId, roleIds: roleIds.join(',') }
+    })
+}
+
+/**
+ * 获取用户机构树
+ */
+export const getUserOfficeTree = () => {
+    return request.get<any[]>('/admin/user/office/tree')
+}
+
+/**
+ * 推送用户到机构
+ */
+export const pushUser = (data: { userIds: string[], clientIds: string[] }) => {
+    return request.post('/admin/user/push', data)
 }

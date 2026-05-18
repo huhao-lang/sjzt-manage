@@ -5,12 +5,17 @@ import { useAuthStore } from '@/stores/auth'
 import type { ApiResponse } from '@/types'
 
 /**
+ * API 前缀（从环境变量读取）
+ */
+export const API_PREFIX = import.meta.env.VITE_API_PREFIX || '/api'
+
+/**
  * 创建 Axios 实例
  */
 const service: AxiosInstance = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL || '',
+    baseURL: API_PREFIX,
     timeout: 10000,
-    withCredentials: true, // 允许携带 cookie（如果后端设置了 Set-Cookie，浏览器会自动处理）
+    withCredentials: true,
     headers: {
         'Content-Type': 'application/json;charset=UTF-8'
     }
@@ -21,7 +26,17 @@ const service: AxiosInstance = axios.create({
  */
 service.interceptors.request.use(
     (config) => {
-        // 认证通过 cookie 方式（TGC / smart-sso-token），由浏览器自动携带
+        const tokenStr = localStorage.getItem('token')
+        if (tokenStr) {
+            try {
+                const tokenData = JSON.parse(tokenStr)
+                if (tokenData.value) {
+                    config.headers.Authorization = `Bearer ${tokenData.value}`
+                }
+            } catch {
+                config.headers.Authorization = `Bearer ${tokenStr}`
+            }
+        }
         return config
     },
     (error: AxiosError) => {
@@ -37,17 +52,19 @@ service.interceptors.response.use(
     (response: AxiosResponse<ApiResponse>) => {
         const { code, data, message } = response.data
 
-        // 根据后端约定,code 为 1 表示成功
+        // code 1: 成功，返回 data（现有接口）
+        // code 200: 成功，返回完整响应（审计接口）
+        // code 0: 部分成功，返回完整响应（审计接口批量操作）
         if (code === 1) {
             return data
+        } else if (code === 200 || code === 0) {
+            return response.data
         } else {
-            // 业务错误
-            ElMessage.error(message || '请求失败')
+            // ElMessage.error(message || '请求失败')
             return Promise.reject(new Error(message || '请求失败'))
         }
     },
     (error: AxiosError<ApiResponse>) => {
-        // HTTP 错误
         let errorMessage = '网络错误'
 
         if (error.response) {
@@ -59,14 +76,16 @@ service.interceptors.response.use(
                     break
                 case 401: {
                     errorMessage = '未授权,请重新登录'
-                    // 清除登录信息并跳转到登录页
                     const authStore = useAuthStore()
                     authStore.logout()
                     break
                 }
-                case 403:
+                case 403: {
                     errorMessage = '拒绝访问'
+                    const authStore = useAuthStore()
+                    authStore.logout()
                     break
+                }
                 case 404:
                     errorMessage = '请求的资源不存在'
                     break
@@ -100,84 +119,36 @@ service.interceptors.response.use(
  * 封装请求方法
  */
 class Request {
-    /**
-     * GET 请求
-     */
-  get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
         return service.get(url, config)
     }
 
-    /**
-     * GET 请求（支持对象参数）
-     */
     getWithOption<T = any>(option: { url: string; params?: any; config?: AxiosRequestConfig }): Promise<T> {
         const { url, params, config } = option
         return service.get(url, { ...config, params })
     }
 
-    /**
-     * POST 请求
-     */
     post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
         return service.post(url, data, config)
     }
 
-    /**
-     * POST 请求（支持对象参数）
-     */
     postWithOption<T = any>(option: { url: string; data?: any; params?: any; config?: AxiosRequestConfig }): Promise<T> {
         const { url, data, params, config } = option
         return service.post(url, data, { ...config, params })
     }
 
-    /**
-     * PUT 请求
-     */
     put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
         return service.put(url, data, config)
     }
 
-    /**
-     * PUT 请求（支持对象参数）
-     */
-    putWithOption<T = any>(option: { url: string; data?: any; params?: any; config?: AxiosRequestConfig }): Promise<T> {
-        const { url, data, params, config } = option
-        return service.put(url, data, { ...config, params })
-    }
-
-    /**
-     * DELETE 请求
-     */
     delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
         return service.delete(url, config)
     }
 
-    /**
-     * DELETE 请求（支持对象参数）
-     */
-    deleteWithOption<T = any>(option: { url: string; params?: any; config?: AxiosRequestConfig }): Promise<T> {
-        const { url, params, config } = option
-        return service.delete(url, { ...config, params })
-    }
-
-    /**
-     * PATCH 请求
-     */
     patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
         return service.patch(url, data, config)
     }
 
-    /**
-     * PATCH 请求（支持对象参数）
-     */
-    patchWithOption<T = any>(option: { url: string; data?: any; params?: any; config?: AxiosRequestConfig }): Promise<T> {
-        const { url, data, params, config } = option
-        return service.patch(url, data, { ...config, params })
-    }
-
-    /**
-     * 上传文件
-     */
     upload<T = any>(url: string, formData: FormData, config?: AxiosRequestConfig): Promise<T> {
         return service.post(url, formData, {
             ...config,
@@ -187,9 +158,6 @@ class Request {
         })
     }
 
-    /**
-     * 下载文件
-     */
     download(url: string, filename: string, config?: AxiosRequestConfig): Promise<void> {
         return service
             .get(url, {

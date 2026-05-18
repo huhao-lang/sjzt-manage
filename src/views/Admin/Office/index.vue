@@ -71,28 +71,82 @@
         </el-table-column>
       </el-table>
     </el-card>
+
+    <!-- 新增/编辑弹窗 -->
+    <OfficeEditDialog
+      ref="editDialogRef"
+      v-model:visible="editDialogVisible"
+      :office-tree="officeTree"
+      @success="loadOfficeTree"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Lock, Unlock, Delete } from '@element-plus/icons-vue'
 import { getOfficeTree, enableOffice, deleteOffice } from '@/api/office'
-import type { Office } from '@/types' 
+import type { Office } from '@/types'
+import OfficeEditDialog from './components/OfficeEditDialog.vue'
 
-const router = useRouter()
-
+// 表格数据
 const tableRef = ref()
 const officeTree = ref<Office[]>([])
 const loading = ref(false)
 const selectedRows = ref<Office[]>([])
 
+// 弹窗相关
+const editDialogVisible = ref(false)
+const editDialogRef = ref()
+
+// 获取选中的ID
+const getSelectedIds = () => {
+  return selectedRows.value.map(row => row.id).join(',')
+}
+
+// 扁平数据转树形结构
+const listToTree = (list: any[]) => {
+  const validList = list.filter(item => item.id !== null && item.id !== undefined)
+
+  const map: Record<string, any> = {}
+  const roots: any[] = []
+
+  validList.forEach(item => {
+    map[item.id] = { ...item, children: [] }
+  })
+
+  validList.forEach(item => {
+    const node = map[item.id]
+    const parentId = item.parentId
+
+    if (parentId === '-1' || parentId === null || parentId === undefined || !map[parentId]) {
+      roots.push(node)
+    } else {
+      map[parentId].children.push(node)
+    }
+  })
+
+  const removeEmptyChildren = (nodes: any[]) => {
+    nodes.forEach(node => {
+      if (node.children.length === 0) {
+        delete node.children
+      } else {
+        removeEmptyChildren(node.children)
+      }
+    })
+  }
+  removeEmptyChildren(roots)
+
+  return roots
+}
+
+// 加载机构树
 const loadOfficeTree = async () => {
   loading.value = true
   try {
-    officeTree.value = await getOfficeTree()
+    const list = await getOfficeTree()
+    officeTree.value = listToTree(list || [])
   } catch (error: any) {
     ElMessage.error(error.message || '加载机构树失败')
     officeTree.value = []
@@ -101,20 +155,19 @@ const loadOfficeTree = async () => {
   }
 }
 
+// 选择变化
 const handleSelectionChange = (rows: Office[]) => {
   selectedRows.value = rows
 }
 
-const getSelectedIds = () => {
-  return selectedRows.value.map(row => row.id).join(',')
-}
-
+// 新增
 const handleAdd = () => {
-  router.push('/admin/office/edit')
+  editDialogRef.value?.open()
 }
 
+// 编辑
 const handleEdit = (row: Office) => {
-  router.push(`/admin/office/edit?id=${row.id}`)
+  editDialogRef.value?.open(row)
 }
 
 // 单个启用

@@ -29,15 +29,19 @@ export interface PageResult<T> {
 }
 
 /**
- * 菜单项
+ * 菜单项（用于侧边栏和动态路由）
  */
 export interface MenuItem {
-    id: number
-    parentId: number | null
+    id: string
+    parentId: string | null
     name: string
     url?: string
     icon?: string
     sort?: number
+    visible?: boolean
+    component?: string         // 组件路径
+    routeName?: string         // 路由名称
+    menuType?: number          // 菜单类型：0=目录, 1=菜单, 2=按钮
     children?: MenuItem[]
 }
 
@@ -60,15 +64,22 @@ export interface TokenUser {
  */
 export interface UserInfo {
     id: string
-    username: string
+    username?: string
+    account?: string
     name: string
     dept?: string
+    officeId?: string
+    officeName?: string
     email?: string
+    companyEmail?: string
     phone?: string
     idNumber?: string
+    gender?: string
     avatar?: string
     roles?: string[]
     permissions?: string[]
+    createTime?: string
+    updateTime?: string
 }
 
 // ==================== 认证相关类型 ====================
@@ -87,15 +98,12 @@ export interface LoginParams {
  * 登录响应
  */
 export interface LoginResponse {
-    expiresIn: number
-    tgt: string
-    redirectUri: string
+    expiresIn: string
+    officeId: string
+    userId: string
     name: string
     dept: string
-    tokenUser: TokenUser
     accessToken: string
-    userId: string
-    refreshToken: string
 }
 
 /**
@@ -146,15 +154,17 @@ export interface ResetPasswordParams {
  */
 export interface User {
     id: number
+    account: string
     username: string
     name: string
     email?: string
     phone?: string
     idNumber?: string
-    officeId?: number
+    officeId?: string
     officeName?: string
-    status: number
-    createTime: string
+    isEnable: boolean
+    lastLoginTime?: string
+    createTime?: string
     updateTime?: string
 }
 
@@ -210,11 +220,11 @@ export interface UserRole {
 export interface Role {
     id: number
     name: string
-    code: string
+    code?: string
     description?: string
     sort?: number
-    status: number
-    createTime: string
+    isEnable: boolean
+    createTime?: string
     updateTime?: string
 }
 
@@ -265,17 +275,20 @@ export interface RolePermission {
 export interface Permission {
     id: string
     parentId: string | null
-    appId: string
+    appId: string,
     name: string
     icon?: string
     url?: string
-    component?: string        // 组件路径（相对于 views 目录）
-    redirect?: string         // 重定向地址
-    perms?: string            // 权限标识
-    visible?: boolean         // 是否显示在菜单中
-    isCache?: boolean         // 是否缓存（keep-alive）
-    isFrame?: boolean         // 是否外链
+    routeName?: string         // 路由名称
+    component?: string         // 组件路径（相对于 views 目录）
+    redirect?: string          // 重定向地址
+    perms?: string             // 权限标识
+    query?: string             // 路由参数
+    visible?: boolean          // 是否显示在菜单中
+    isCache?: boolean          // 是否缓存（keep-alive）
+    isFrame?: boolean          // 是否外链
     sort?: number
+    menuType?: number          // 菜单类型：0=目录, 1=菜单, 2=按钮
     isMenu: boolean
     isEnable: boolean
     children?: Permission[]
@@ -297,12 +310,17 @@ export interface PermissionTreeParams {
 export interface App {
     id: number
     name: string
-    code: string
-    redirectUri: string
+  code: string,
+  clientId:string,
+    redirectUri?: string
     logoutUri?: string
     description?: string
-    status: number
-    createTime: string
+    sort?: number
+    isEnable?: boolean
+    status?: number
+    userSyncUrl?: string
+    deptSyncUrl?: string
+    createTime?: string
     updateTime?: string
 }
 
@@ -394,4 +412,128 @@ export interface OfficeUpdateParams {
     phone?: string
     sort?: number
     status?: number
+}
+
+// ==================== 审计管理相关类型 ====================
+
+/**
+ * 审计状态
+ */
+export type AuditStatus = 'PENDING' | 'SUSPENDED' | 'APPROVED' | 'REJECTED'
+
+/**
+ * 事件类型
+ */
+export type EventType = 'CREATE' | 'UPDATE' | 'DELETE'
+
+/**
+ * 部门审计记录
+ */
+export interface DeptAudit {
+    id: number
+    deptId: number
+    parentId: number | null
+    name: string
+    deptCode: string
+    sort: number
+    isEnable: boolean
+    event: EventType
+    eventTime: string
+    clientId: string
+    sourceSystem: string
+    batchNo: string
+    auditStatus: AuditStatus
+    submitTime: string
+    auditorId?: number
+    auditorName?: string
+    auditTime?: string
+    auditOpinion?: string
+    rejectReason?: string
+}
+
+/**
+ * 用户审计记录
+ */
+export interface UserAudit {
+    id: number
+    userId: number
+    officeId: number
+    name: string
+    gender: string
+    idNumber: string
+    phone: string
+    jobGrade: string
+    deptCode: string
+    posts: string
+    isEnable: boolean
+    event: EventType
+    eventTime: string
+    clientId: string
+    sourceSystem: string
+    batchNo: string
+    auditStatus: AuditStatus
+    submitTime: string
+    auditorId?: number
+    auditorName?: string
+    auditTime?: string
+    auditOpinion?: string
+    rejectReason?: string
+}
+
+/**
+ * 审计查询参数
+ */
+export interface AuditQueryParams {
+    auditStatus?: AuditStatus
+    clientId?: string
+    startTime?: string
+    endTime?: string
+    pageNum?: number
+    pageSize?: number
+}
+
+/**
+ * 部门审计查询参数
+ */
+export interface DeptAuditQueryParams extends AuditQueryParams {
+    deptName?: string
+    parentId?: number | string
+    deptId?: number | string
+}
+
+/**
+ * 用户审计查询参数
+ */
+export interface UserAuditQueryParams extends AuditQueryParams {
+    userName?: string
+}
+
+/**
+ * 审计通过请求
+ */
+export interface AuditApproveRequest {
+    ids: number[]
+    auditorId: number
+    auditorName: string
+    auditOpinion?: string
+    targetClientIds: string[]
+}
+
+/**
+ * 审计拒绝请求
+ */
+export interface AuditRejectRequest {
+    ids: number[]
+    auditorId: number
+    auditorName: string
+    rejectReason: string
+}
+
+/**
+ * 审计结果
+ */
+export interface AuditResult {
+    successCount: number
+    failureCount: number
+    failureMessages: string[]
 }

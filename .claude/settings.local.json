@@ -3,7 +3,11 @@
     "allow": [
       "mcp__ide__getDiagnostics",
       "Bash(dir:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(del \"E:\\xingshao\\jf\\zt-manage2\\src\\views\\Admin\\User\\UserEdit.vue\")",
+      "Bash(del \"E:\\xingshao\\jf\\zt-manage2\\src\\views\\Admin\\Role\\RoleEdit.vue\")",
+      "Bash(del \"E:\\xingshao\\jf\\zt-manage2\\src\\views\\Admin\\App\\AppEdit.vue\")",
+      "Bash(del \"E:\\xingshao\\jf\\zt-manage2\\src\\views\\Admin\\Office\\OfficeEdit.vue\")"
     ]
   }
 }
