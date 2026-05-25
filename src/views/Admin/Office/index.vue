@@ -112,6 +112,20 @@ const listToTree = (list: any[]) => {
   const map: Record<string, any> = {}
   const roots: any[] = []
 
+  const getSortValue = (value: unknown) => {
+    const sort = Number(value)
+    return Number.isFinite(sort) ? sort : Number.MAX_SAFE_INTEGER
+  }
+
+  const sortTree = (nodes: any[]) => {
+    nodes.sort((a, b) => getSortValue(a.sort) - getSortValue(b.sort))
+    nodes.forEach(node => {
+      if (node.children?.length) {
+        sortTree(node.children)
+      }
+    })
+  }
+
   validList.forEach(item => {
     map[item.id] = { ...item, children: [] }
   })
@@ -126,6 +140,8 @@ const listToTree = (list: any[]) => {
       map[parentId].children.push(node)
     }
   })
+
+  sortTree(roots)
 
   const removeEmptyChildren = (nodes: any[]) => {
     nodes.forEach(node => {
