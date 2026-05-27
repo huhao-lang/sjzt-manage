@@ -537,3 +537,46 @@ export interface AuditResult {
     failureCount: number
     failureMessages: string[]
 }
+
+// ==================== 密码修改日志相关类型 ====================
+
+/**
+ * 密码修改场景
+ */
+export type ChangeType = 'PROFILE_CHANGE' | 'FORGOT_PASSWORD'
+
+/**
+ * 验证方式
+ */
+export type VerifyType = 'LOGIN' | 'ID_CARD' | 'SMS' | 'ID_CARD_SMS' | 'UNKNOWN'
+
+/**
+ * 密码修改日志
+ */
+export interface PasswordChangeLog {
+    id: number
+    userId: number
+    account: string
+    name: string
+    changeType: ChangeType
+    verifyType: VerifyType
+    operatorUserId: number
+    operatorAccount: string
+    clientIp: string
+    userAgent: string
+    changeTime: string
+    remark: string
+    createTime: string
+    updateTime: string
+}
+
+/**
+ * 密码修改日志查询参数
+ */
+export interface PasswordChangeLogQueryParams {
+    userId?: number
+    account?: string
+    name?: string
+    changeType?: ChangeType
+    verifyType?: VerifyType
+}

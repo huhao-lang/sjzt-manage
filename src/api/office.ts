@@ -35,3 +35,19 @@ export const enableOffice = (ids: string, isEnable: boolean) => {
 export const deleteOffice = (ids: string) => {
     return request.post('/admin/office/delete', { ids })
 }
+
+/**
+ * 查询组织架构绑定的业务系统
+ * @param officeId 组织架构ID
+ */
+export const getOfficeAppClientIds = (clientId: string | number) => {
+    return request.get<string[]>('/admin/office-app-rel/office-ids', { params: { clientId } })
+}
+
+/**
+ * 保存组织架构绑定的业务系统
+ * @param data clientId 和 officeIds
+ */
+export const saveOfficeAppRel = (data: { clientId: string | number; officeIds: string[] }) => {
+    return request.post('/admin/office-app-rel/save-by-client', data)
+}

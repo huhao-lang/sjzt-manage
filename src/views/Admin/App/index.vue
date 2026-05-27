@@ -89,6 +89,9 @@
             <el-button type="info" link size="small" @click="handleViewCredentials(row)">
               查看密钥
             </el-button>
+            <el-button type="primary" link size="small" @click="handleBindOffice(row)">
+              绑定组织架构
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -121,6 +124,12 @@
       v-model="credentialsDialogVisible"
       :app="currentCredentialsApp"
     />
+
+    <!-- 绑定组织架构弹窗 -->
+    <OfficeBindDialog
+      v-model="officeBindDialogVisible"
+      :app="currentBindApp"
+    />
   </div>
 </template>
 
@@ -132,6 +141,7 @@ import { getAppList, enableApp, deleteApp } from '@/api/app'
 import type { App } from '@/types'
 import AppEditDialog from './components/AppEditDialog.vue'
 import CredentialsDialog from './components/CredentialsDialog.vue'
+import OfficeBindDialog from './components/OfficeBindDialog.vue'
 
 // 搜索表单
 const searchForm = reactive({
@@ -158,6 +168,10 @@ const currentEditApp = ref<App | null>(null)
 // 密钥弹窗
 const credentialsDialogVisible = ref(false)
 const currentCredentialsApp = ref<App | null>(null)
+
+// 绑定组织架构弹窗
+const officeBindDialogVisible = ref(false)
+const currentBindApp = ref<App | null>(null)
 
 // 获取选中的ID
 const getSelectedIds = () => {
@@ -321,6 +335,12 @@ const handleBatchViewCredentials = () => {
     return
   }
   handleViewCredentials(selectedRows.value[0])
+}
+
+// 绑定组织架构
+const handleBindOffice = (row: App) => {
+  currentBindApp.value = row
+  officeBindDialogVisible.value = true
 }
 
 onMounted(() => {

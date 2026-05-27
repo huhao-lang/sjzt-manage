@@ -287,7 +287,7 @@ const loadData = async () => {
       officeId: searchForm.officeId || undefined,
       account: searchForm.account || undefined,
       name: searchForm.name || undefined,
-      currentUserId: authStore.userInfo.id
+      currentUserId: authStore.userInfo?.id
     })
     tableData.value = res.records
     pagination.total = Number(res.total) || 0

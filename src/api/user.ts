@@ -10,6 +10,7 @@ export const getUserList = (params: {
     officeId?: string
     account?: string
     name?: string
+    currentUserId?: string
 }) => {
     return request.get<{
         records: User[]
