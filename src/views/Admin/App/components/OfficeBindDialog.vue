@@ -23,7 +23,6 @@
           node-key="id"
           :props="{ label: 'name', children: 'children' }"
           show-checkbox
-          check-strictly
           default-expand-all
           v-loading="loading"
         >
