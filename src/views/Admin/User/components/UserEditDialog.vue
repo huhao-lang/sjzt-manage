@@ -63,12 +63,24 @@
           </el-form-item>
         </el-col>
 
-        <el-col :span="12" v-if="isEdit">
+        <el-col :span="24" v-if="isEdit">
           <el-form-item label="状态" prop="isEnable">
             <el-radio-group v-model="formData.isEnable">
               <el-radio :label="true">启用</el-radio>
               <el-radio :label="false">禁用</el-radio>
             </el-radio-group>
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="12">
+          <el-form-item label="职位" prop="posts">
+            <el-input v-model="formData.posts" placeholder="请输入职位" />
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="12">
+          <el-form-item label="职级" prop="jobGrade">
+            <el-input v-model="formData.jobGrade" placeholder="请输入职级" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -112,8 +124,10 @@ const formData = reactive({
   email: '',
   phone: '',
   idNumber: '',
-  officeId: '' as string,
-  isEnable: true
+  officeId: '',
+  isEnable: true,
+  posts: '',
+  jobGrade: ''
 })
 
 const resetFormData = () => {
@@ -126,6 +140,8 @@ const resetFormData = () => {
   formData.idNumber = ''
   formData.officeId = ''
   formData.isEnable = true
+  formData.posts = ''
+  formData.jobGrade = ''
   currentEditId.value = ''
 }
 
@@ -210,6 +226,8 @@ const open = async (id?: string) => {
       formData.idNumber = data.idNumber || ''
       formData.officeId = data.officeId || ''
       formData.isEnable = data.isEnable ?? true
+      formData.posts = data.posts || ''
+      formData.jobGrade = data.jobGrade || ''
     } catch (error: any) {
       ElMessage.error(error.message || '获取用户信息失败')
       return
@@ -239,7 +257,9 @@ const handleSubmit = async () => {
         phone: formData.phone,
         idNumber: formData.idNumber,
         officeId: formData.officeId,
-        isEnable: formData.isEnable
+        isEnable: formData.isEnable,
+        posts: formData.posts,
+        jobGrade: formData.jobGrade
       })
       ElMessage.success('更新成功')
     } else {
@@ -250,7 +270,9 @@ const handleSubmit = async () => {
         email: formData.email,
         phone: formData.phone,
         idNumber: formData.idNumber,
-        officeId: formData.officeId
+        officeId: formData.officeId,
+        posts: formData.posts,
+        jobGrade: formData.jobGrade
       })
       ElMessage.success('创建成功')
     }

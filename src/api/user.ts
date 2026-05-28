@@ -36,6 +36,8 @@ export const createUser = (data: {
     phone?: string
     idNumber?: string
     officeId?: string
+    posts?: string
+    jobGrade?: string
 }) => {
     return request.post('/admin/user/save', data)
 }
@@ -51,6 +53,8 @@ export const updateUser = (data: {
     idNumber?: string
     officeId?: string
     isEnable?: boolean
+    posts?: string
+    jobGrade?: string
 }) => {
     return request.post('/admin/user/save', data)
 }
@@ -116,6 +120,6 @@ export const getUserOfficeTree = () => {
 /**
  * 推送用户到机构
  */
-export const pushUser = (data: { userIds: string[], clientIds: string[] }) => {
+export const pushUser = (data: { userIds: string[], clientIds: string[], event: string }) => {
     return request.post('/admin/user/push', data)
 }

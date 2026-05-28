@@ -1,10 +1,31 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { RouteRecordRaw } from 'vue-router'
+// import type { RouteRecordRaw } from 'vue-router'
 import type { MenuItem } from '@/types'
 import { getMenuList } from '@/api/menu'
 import { generateRoutes, resetRouter } from '@/router/dynamicRoutes'
 import router, { notFoundRoute } from '@/router'
+
+/**
+ * 过滤菜单项
+ * @param menus 菜单列表
+ * @param parentUrl 父菜单 URL
+ * @param hideChildren 要隐藏的子菜单 URL 列表
+ */
+function filterMenuItems(menus: MenuItem[], parentUrl: string, hideChildren: string[]): MenuItem[] {
+    return menus.map(menu => {
+        const newMenu = { ...menu }
+        if (menu.url === parentUrl && menu.children) {
+            newMenu.children = menu.children.filter(
+                child => !hideChildren.includes(child.url || '')
+            )
+        }
+        if (newMenu.children) {
+            newMenu.children = filterMenuItems(newMenu.children, parentUrl, hideChildren)
+        }
+        return newMenu
+    })
+}
 
 export const useRouteStore = defineStore('route', () => {
     // 菜单列表（用于侧边栏显示）
@@ -21,7 +42,8 @@ export const useRouteStore = defineStore('route', () => {
         try {
             // 获取菜单数据
             const data = await getMenuList()
-            menus.value = data || []
+            // 过滤掉 audit 菜单下的 deptAudit 和 userAudit 子菜单
+            menus.value = filterMenuItems(data || [], '/audit', ['/audit/deptAudit', '/audit/userAudit'])
 
             // 生成动态路由
             const dynamicRoutes = generateRoutes(menus.value)

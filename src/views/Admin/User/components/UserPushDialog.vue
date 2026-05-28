@@ -23,6 +23,21 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item label="推送类型" prop="event">
+        <el-select
+          v-model="formData.event"
+          placeholder="请选择推送类型"
+          style="width: 100%"
+          filterable
+        >
+          <el-option
+            v-for="event in eventList"
+            :key="event.value"
+            :label="event.label"
+            :value="event.value"
+          />
+        </el-select>
+      </el-form-item>
     </el-form>
 
     <template #footer>
@@ -51,14 +66,23 @@ const submitting = ref(false)
 const appLoading = ref(false)
 const currentUserId = ref<string>('')
 const appList = ref<App[]>([])
+const eventList = [
+  { label: '新建', value: 'CREATE' },
+  { label: '修改', value: 'UPDATE' },
+  { label: '删除', value: 'DELETE' }
+]
 
 const formData = reactive({
-  clientId: '' as string
+  clientId: '' as string,
+  event: '' as string,
 })
 
 const rules: FormRules = {
   clientId: [
     { required: true, message: '请选择应用', trigger: 'change' }
+  ],
+  event: [
+    { required: true, message: '请选择推送类型', trigger: 'change' }
   ]
 }
 
@@ -82,6 +106,7 @@ const loadAppList = async () => {
 const open = (userId: string) => {
   currentUserId.value = userId
   formData.clientId = ''
+  formData.event = ''
   visible.value = true
   loadAppList()
 }
@@ -89,6 +114,7 @@ const open = (userId: string) => {
 const handleClose = () => {
   formRef.value?.resetFields()
   formData.clientId = ''
+  formData.event = ''
   currentUserId.value = ''
 }
 
@@ -101,7 +127,8 @@ const handleSubmit = async () => {
 
     await pushUser({
       userIds: [currentUserId.value],
-      clientIds: [formData.clientId]
+      clientIds: [formData.clientId],
+      event: formData.event
     })
 
     ElMessage.success('推送成功')

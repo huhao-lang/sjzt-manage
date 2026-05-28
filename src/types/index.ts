@@ -166,6 +166,8 @@ export interface User {
     lastLoginTime?: string
     createTime?: string
     updateTime?: string
+    posts?: string
+    jobGrade?: string
 }
 
 /**
