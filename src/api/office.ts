@@ -51,3 +51,10 @@ export const getOfficeAppClientIds = (clientId: string | number) => {
 export const saveOfficeAppRel = (data: { clientId: string | number; officeIds: string[] }) => {
     return request.post('/admin/office-app-rel/save-by-client', data)
 }
+
+/**
+ * 推送机构
+ */
+export const pushOffice = (data: { deptIds: string[], clientIds: string[], event: string }) => {
+    return request.post('/admin/office/push', data)
+}

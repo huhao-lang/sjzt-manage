@@ -41,7 +41,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="280" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" link size="small" @click="handleEdit(row)">
               修改
@@ -67,6 +67,9 @@
             <el-button type="danger" link size="small" @click="handleDelete(row)">
               删除
             </el-button>
+            <el-button type="primary" link size="small" @click="handlePush(row)">
+              推送
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -79,6 +82,13 @@
       :office-tree="officeTree"
       @success="loadOfficeTree"
     />
+
+    <!-- 推送机构弹窗 -->
+    <OfficePushDialog
+      ref="pushDialogRef"
+      v-model:visible="pushDialogVisible"
+      @success="loadOfficeTree"
+    />
   </div>
 </template>
 
@@ -89,6 +99,7 @@ import { Plus, Lock, Unlock, Delete } from '@element-plus/icons-vue'
 import { getOfficeTree, enableOffice, deleteOffice } from '@/api/office'
 import type { Office } from '@/types'
 import OfficeEditDialog from './components/OfficeEditDialog.vue'
+import OfficePushDialog from './components/OfficePushDialog.vue'
 
 // 表格数据
 const tableRef = ref()
@@ -99,6 +110,8 @@ const selectedRows = ref<Office[]>([])
 // 弹窗相关
 const editDialogVisible = ref(false)
 const editDialogRef = ref()
+const pushDialogVisible = ref(false)
+const pushDialogRef = ref()
 
 // 获取选中的ID
 const getSelectedIds = () => {
@@ -179,6 +192,11 @@ const handleSelectionChange = (rows: Office[]) => {
 // 新增
 const handleAdd = () => {
   editDialogRef.value?.open()
+}
+
+// 推送
+const handlePush = (row: Office) => {
+  pushDialogRef.value?.open(row.id.toString())
 }
 
 // 编辑
