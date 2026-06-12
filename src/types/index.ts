@@ -582,3 +582,61 @@ export interface PasswordChangeLogQueryParams {
     changeType?: ChangeType
     verifyType?: VerifyType
 }
+
+// ==================== 数据同步日志相关类型 ====================
+
+/**
+ * 同步类型
+ */
+export type SyncType = 'PUSH' | 'RECEIVE'
+
+/**
+ * 同步数据类型
+ */
+export type SyncDataType = 'USER' | 'DEPT'
+
+/**
+ * 同步操作类型
+ */
+export type SyncAction = 'CREATE' | 'UPDATE' | 'DELETE'
+
+/**
+ * 同步状态
+ */
+export type SyncStatus = 'SUCCESS' | 'FAILED' | 'PARTIAL' | 'PROCESSING'
+
+/**
+ * 数据同步日志记录
+ */
+export interface SyncLog {
+    id: number
+    batchNo: string
+    syncType: SyncType
+    dataType: SyncDataType
+    action: SyncAction
+    targetSystem: string
+    clientId: string
+    totalCount: number
+    successCount: number
+    failedCount: number
+    syncStatus: SyncStatus
+    syncUrl: string
+    errorMessage?: string
+    requestBody?: string
+    responseBody?: string
+    operatorId: number
+    operatorName: string
+    syncTime: string
+    createTime: string
+    updateTime: string
+}
+
+/**
+ * 数据同步日志查询参数
+ */
+export interface SyncLogQueryParams extends PageParams {
+    syncType?: SyncType | ''
+    dataType?: SyncDataType | ''
+    syncStatus?: SyncStatus | ''
+    clientId?: string
+}

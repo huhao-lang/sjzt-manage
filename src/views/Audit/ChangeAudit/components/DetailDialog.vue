@@ -10,7 +10,7 @@
       <el-descriptions-item label="操作人账号">{{ detail?.operatorAccount }}</el-descriptions-item>
       <el-descriptions-item label="操作人ID">{{ detail?.operatorUserId }}</el-descriptions-item>
       <el-descriptions-item label="客户端IP">{{ detail?.clientIp || '-' }}</el-descriptions-item>
-      <el-descriptions-item label="修改时间">{{ detail?.changeTime }}</el-descriptions-item>
+      <el-descriptions-item label="修改时间">{{ detail?.updateTime }}</el-descriptions-item>
       <el-descriptions-item label="创建时间">{{ detail?.createTime }}</el-descriptions-item>
       <el-descriptions-item label="更新时间">{{ detail?.updateTime }}</el-descriptions-item>
       <el-descriptions-item label="备注" :span="2">{{ detail?.remark || '-' }}</el-descriptions-item>

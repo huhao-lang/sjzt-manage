@@ -53,7 +53,7 @@
         </el-table-column>
         <el-table-column prop="operatorAccount" label="操作人账号" min-width="120" show-overflow-tooltip />
         <el-table-column prop="clientIp" label="客户端IP" min-width="130" show-overflow-tooltip />
-        <el-table-column prop="changeTime" label="修改时间" min-width="160" />
+        <el-table-column prop="updateTime" label="修改时间" min-width="160" />
         <el-table-column prop="remark" label="备注" min-width="150" show-overflow-tooltip />
         <el-table-column label="操作" width="100" fixed="right" align="center">
           <template #default="{ row }">
