@@ -42,36 +42,38 @@
                         </el-button>
                     </template>
                 </el-table-column>
-                <el-table-column prop="syncType" label="同步类型" width="100">
+                <el-table-column prop="syncType" label="同步类型" width="100" align="center">
                     <template #default="{ row }">
                         <el-tag type="primary">{{ getSyncTypeLabel(row.syncType) }}</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="dataType" label="数据类型" width="90">
+                <el-table-column prop="dataType" label="数据类型" width="90" align="center">
                     <template #default="{ row }">
                         <el-tag :type="getDataTypeTagType(row.dataType)">{{ getDataTypeLabel(row.dataType) }}</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="action" label="操作类型" width="90">
+                <el-table-column prop="action" label="操作类型" width="90" align="center">
                     <template #default="{ row }">
                         {{ getActionLabel(row.action) }}
                     </template>
                 </el-table-column>
-                <el-table-column prop="targetSystem" label="目标系统" min-width="140" show-overflow-tooltip />
-                <el-table-column label="总数/成功/失败" width="140">
+                <el-table-column prop="targetSystem" label="目标系统" width="140" show-overflow-tooltip />
+                <el-table-column label="同步结果" width="180" align="center">
                     <template #default="{ row }">
-                        <span :class="{ 'has-failed': row.failedCount > 0 }">
-                            {{ row.totalCount }}/{{ row.successCount }}/{{ row.failedCount }}
-                        </span>
+                        <el-space :size="4">
+                            <el-tag size="small" type="info">总 {{ row.totalCount }}</el-tag>
+                            <el-tag size="small" type="success">成功 {{ row.successCount }}</el-tag>
+                            <el-tag v-if="row.failedCount > 0" size="small" type="danger">失败 {{ row.failedCount }}</el-tag>
+                        </el-space>
                     </template>
                 </el-table-column>
-                <el-table-column prop="syncStatus" label="状态" width="100">
+                <el-table-column prop="syncStatus" label="状态" width="100" align="center">
                     <template #default="{ row }">
                         <el-tag :type="getSyncStatusTagType(row.syncStatus)">{{ getSyncStatusLabel(row.syncStatus)
                             }}</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="operatorName" label="操作人" width="100" show-overflow-tooltip />
+                <el-table-column prop="operatorName" label="操作人" width="100" show-overflow-tooltip  align="center" />
                 <el-table-column prop="updateTime" label="同步时间" min-width="160" />
                 <el-table-column label="操作" width="100" fixed="right" align="center">
                     <template #default="{ row }">
@@ -256,10 +258,6 @@ onMounted(() => {
         margin-top: 16px;
         display: flex;
         justify-content: flex-end;
-    }
-
-    .has-failed {
-        color: var(--el-color-danger);
     }
 }
 </style>

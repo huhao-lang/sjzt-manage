@@ -10,6 +10,8 @@ export const getUserList = (params: {
     officeId?: string
     account?: string
     name?: string
+    posts?: string
+    jobGrade?: string
     currentUserId?: string
 }) => {
     return request.get<{

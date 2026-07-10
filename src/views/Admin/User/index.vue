@@ -34,6 +34,12 @@
             <el-form-item label="姓名">
               <el-input v-model="searchForm.name" placeholder="姓名" clearable @keyup.enter="handleSearch" />
             </el-form-item>
+            <el-form-item label="职务">
+              <el-input v-model="searchForm.posts" placeholder="职务" clearable @keyup.enter="handleSearch" />
+            </el-form-item>
+            <el-form-item label="岗位">
+              <el-input v-model="searchForm.jobGrade" placeholder="岗位" clearable @keyup.enter="handleSearch" />
+            </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="handleSearch">搜索</el-button>
               <el-button @click="handleReset">重置</el-button>
@@ -77,6 +83,8 @@
             <el-table-column type="selection" width="55" />
             <el-table-column prop="name" label="姓名" min-width="100" />
             <el-table-column prop="account" label="登录名" min-width="120" />
+            <el-table-column prop="posts" label="职务" min-width="150" />
+            <el-table-column prop="jobGrade" label="岗位" min-width="150" />
             <el-table-column prop="lastLoginTime" label="最后登录时间" min-width="160" />
             <el-table-column prop="isEnable" label="是否启用" width="100">
               <template #default="{ row }">
@@ -185,7 +193,9 @@ const officeTree = ref<Office[]>([])
 const searchForm = reactive({
   officeId: '' as string,
   account: '',
-  name: ''
+  name: '',
+  posts: '',
+  jobGrade: ''
 })
 
 // 表格数据
@@ -287,6 +297,8 @@ const loadData = async () => {
       officeId: searchForm.officeId || undefined,
       account: searchForm.account || undefined,
       name: searchForm.name || undefined,
+      posts: searchForm.posts || undefined,
+      jobGrade: searchForm.jobGrade || undefined,
       currentUserId: authStore.userInfo?.id
     })
     tableData.value = res.records
@@ -323,6 +335,8 @@ const handleReset = () => {
   searchForm.officeId = ''
   searchForm.account = ''
   searchForm.name = ''
+  searchForm.posts = ''
+  searchForm.jobGrade = ''
   treeRef.value?.setCurrentKey(null)
   handleSearch()
 }
