@@ -63,7 +63,7 @@
           </el-button>
           <el-button type="danger" @click="handleBatchDelete">
             <el-icon><Delete /></el-icon>
-            删除
+            离职
           </el-button>
           <el-button @click="handleBatchResetPassword">
             <el-icon><Key /></el-icon>
@@ -117,7 +117,7 @@
                   启用
                 </el-button>
                 <el-button type="danger" link size="small" @click="handleDelete(row)">
-                  删除
+                  离职
                 </el-button>
                 <el-button type="info" link size="small" @click="handleResetPassword(row)">
                   重置密码
@@ -376,17 +376,17 @@ const handleDisable = async (row: User) => {
 // 单个删除
 const handleDelete = async (row: User) => {
   try {
-    await ElMessageBox.confirm('删除用户会关联对应的角色、权限，确认要删除?', '提示', {
+    await ElMessageBox.confirm('离职用户会关联对应的角色、权限，确认要离职?', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning'
     })
     await deleteUser(row.id.toString())
-    ElMessage.success('删除成功')
+    ElMessage.success('离职成功')
     loadData()
   } catch (error: any) {
     if (error !== 'cancel') {
-      ElMessage.error(error.message || '删除失败')
+      ElMessage.error(error.message || '离职失败')
     }
   }
 }
@@ -459,17 +459,17 @@ const handleBatchDelete = async () => {
     return
   }
   try {
-    await ElMessageBox.confirm('删除用户会关联对应的角色、权限，确认要删除?', '提示', {
+    await ElMessageBox.confirm('离职用户会关联对应的角色、权限，确认要离职?', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning'
     })
     await deleteUser(ids)
-    ElMessage.success('删除成功')
+    ElMessage.success('离职成功')
     loadData()
   } catch (error: any) {
     if (error !== 'cancel') {
-      ElMessage.error(error.message || '删除失败')
+      ElMessage.error(error.message || '离职失败')
     }
   }
 }

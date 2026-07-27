@@ -69,7 +69,7 @@ const appList = ref<App[]>([])
 const eventList = [
   { label: '新建', value: 'CREATE' },
   { label: '修改', value: 'UPDATE' },
-  { label: '删除', value: 'DELETE' }
+  { label: '离职', value: 'DELETE' }
 ]
 
 const formData = reactive({
