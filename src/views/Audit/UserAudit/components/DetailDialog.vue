@@ -5,8 +5,8 @@
       <el-descriptions-item label="性别">{{ detail?.gender }}</el-descriptions-item>
       <el-descriptions-item label="身份证号">{{ detail?.idNumber }}</el-descriptions-item>
       <el-descriptions-item label="手机号">{{ detail?.phone }}</el-descriptions-item>
+      <el-descriptions-item label="职务">{{ detail?.posts }}</el-descriptions-item>
       <el-descriptions-item label="职级">{{ detail?.jobGrade }}</el-descriptions-item>
-      <el-descriptions-item label="岗位">{{ detail?.posts }}</el-descriptions-item>
       <el-descriptions-item label="是否启用">
         <el-tag :type="detail?.isEnable ? 'success' : 'warning'">
           {{ detail?.isEnable ? '是' : '否' }}

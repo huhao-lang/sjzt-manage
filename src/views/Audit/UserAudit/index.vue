@@ -84,7 +84,8 @@
             <el-table-column prop="gender" label="性别" width="60" />
             <el-table-column prop="phone" label="手机号" min-width="120" />
             <el-table-column prop="officeName" label="部门名称" min-width="120" />
-            <el-table-column prop="posts" label="岗位" min-width="100" show-overflow-tooltip />
+            <el-table-column prop="posts" label="职务" min-width="100" show-overflow-tooltip />
+            <el-table-column prop="jobGrade" label="职级" min-width="100" show-overflow-tooltip />
             <el-table-column prop="event" label="事件类型" width="100">
               <template #default="{ row }">
                 <el-tag :type="getEventTagType(row.event)">{{ getEventLabel(row.event) }}</el-tag>

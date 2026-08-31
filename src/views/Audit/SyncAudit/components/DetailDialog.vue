@@ -78,6 +78,7 @@
 import { computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { SyncLog, SyncType, SyncDataType, SyncAction, SyncStatus } from '@/types'
+import JSONBig from 'json-bigint'
 
 const props = defineProps<{
   modelValue: boolean
@@ -104,11 +105,11 @@ const errorMessages = computed(() => {
   return props.detail.errorMessage.split(';').map(s => s.trim()).filter(Boolean)
 })
 
-// 格式化JSON
+// 格式化JSON（使用 json-bigint 避免大整数精度丢失）
 const formatJson = (str?: string) => {
   if (!str) return ''
   try {
-    return JSON.stringify(JSON.parse(str), null, 2)
+    return JSONBig.stringify(JSONBig.parse(str), null, 2)
   } catch {
     return str
   }
