@@ -21,6 +21,7 @@
         </el-descriptions-item>
         <el-descriptions-item label="操作人">{{ detail?.operatorName || '-' }}</el-descriptions-item>
         <el-descriptions-item label="操作人ID">{{ detail?.operatorId || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="来源IP">{{ detail?.sourceIp || '-' }}</el-descriptions-item>
         <el-descriptions-item label="同步时间">{{ detail?.updateTime }}</el-descriptions-item>
         <el-descriptions-item label="创建时间">{{ detail?.createTime }}</el-descriptions-item>
       </el-descriptions>

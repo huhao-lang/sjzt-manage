@@ -75,6 +75,7 @@
                 </el-table-column>
                 <el-table-column prop="operatorName" label="操作人" width="100" show-overflow-tooltip  align="center" />
                 <el-table-column prop="updateTime" label="同步时间" min-width="160" />
+                <el-table-column prop="sourceIp" label="来源IP" min-width="160" />
                 <el-table-column label="操作" width="100" fixed="right" align="center">
                     <template #default="{ row }">
                         <el-button type="primary" link size="small" @click="handleDetail(row)">

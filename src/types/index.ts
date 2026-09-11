@@ -627,6 +627,7 @@ export interface SyncLog {
     operatorId: number
     operatorName: string
     syncTime: string
+    sourceIp: string
     createTime: string
     updateTime: string
 }
