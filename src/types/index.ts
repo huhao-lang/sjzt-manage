@@ -598,7 +598,7 @@ export type SyncDataType = 'USER' | 'DEPT'
 /**
  * 同步操作类型
  */
-export type SyncAction = 'CREATE' | 'UPDATE' | 'DELETE'
+export type SyncAction = 'CREATE' | 'UPDATE' | 'DELETE' | 'FULL_SYNC'
 
 /**
  * 同步状态
@@ -614,8 +614,11 @@ export interface SyncLog {
     syncType: SyncType
     dataType: SyncDataType
     action: SyncAction
+    sourceSystem?: string
     targetSystem: string
     clientId: string
+    sourceBatchNo?: string
+    sourceIp?: string
     totalCount: number
     successCount: number
     failedCount: number
@@ -627,7 +630,6 @@ export interface SyncLog {
     operatorId: number
     operatorName: string
     syncTime: string
-    sourceIp: string
     createTime: string
     updateTime: string
 }
@@ -640,4 +642,50 @@ export interface SyncLogQueryParams extends PageParams {
     dataType?: SyncDataType | ''
     syncStatus?: SyncStatus | ''
     clientId?: string
+    batchNo?: string
+    sourceBatchNo?: string
+    sourceIp?: string
+}
+
+/**
+ * 一次数据同步链路
+ */
+export interface SyncTrace {
+    rootBatchNo: string
+    records: SyncLog[]
+    details?: SyncDetailLog[]
+}
+
+/**
+ * 以接收批次为父节点的同步链路分组
+ */
+export interface SyncTraceGroup {
+    receive?: SyncLog | null
+    pushes: SyncLog[]
+    pushCount: number
+    pushTotalCount: number
+    pushSuccessCount: number
+    pushFailedCount: number
+    manual?: boolean
+}
+
+/**
+ * 单条数据在目标系统中的同步结果
+ */
+export interface SyncDetailLog {
+    id: number
+    batchNo: string
+    sourceBatchNo?: string
+    dataType: SyncDataType
+    targetSystem?: string
+    clientId?: string
+    event?: SyncAction
+    parentId?: number | null
+    dataId: number
+    dataName?: string
+    dataContent?: string
+    syncStatus: 'SUCCESS' | 'FAILED'
+    errorMessage?: string
+    responseBody?: string
+    createTime: string
 }

@@ -16,14 +16,19 @@
           <el-tag :type="getSyncStatusTagType(detail?.syncStatus)">{{ getSyncStatusLabel(detail?.syncStatus) }}</el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="客户端ID">{{ detail?.clientId || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="对应接收批次">
+          {{ detail?.sourceBatchNo || (detail?.syncType === 'RECEIVE' ? detail?.batchNo : '-') }}
+        </el-descriptions-item>
         <el-descriptions-item label="同步URL" :span="1">
           <span class="url-text">{{ detail?.syncUrl || '-' }}</span>
         </el-descriptions-item>
         <el-descriptions-item label="操作人">{{ detail?.operatorName || '-' }}</el-descriptions-item>
         <el-descriptions-item label="操作人ID">{{ detail?.operatorId || '-' }}</el-descriptions-item>
         <el-descriptions-item label="来源IP">{{ detail?.sourceIp || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="同步时间">{{ detail?.updateTime }}</el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{ detail?.createTime }}</el-descriptions-item>
+        <el-descriptions-item label="同步时间">
+          {{ formatDateTime(detail?.syncTime || detail?.updateTime || detail?.createTime) }}
+        </el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{ formatDateTime(detail?.createTime) }}</el-descriptions-item>
       </el-descriptions>
 
       <!-- 统计信息 -->
@@ -80,6 +85,7 @@ import { computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { SyncLog, SyncType, SyncDataType, SyncAction, SyncStatus } from '@/types'
 import JSONBig from 'json-bigint'
+import { formatDateTime } from '@/utils/date'
 
 const props = defineProps<{
   modelValue: boolean
