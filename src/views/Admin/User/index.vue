@@ -326,8 +326,11 @@ const handleSelectionChange = (rows: User[]) => {
 
 // 搜索
 const handleSearch = () => {
+  //文本搜索不继承左侧机构树的筛选条件
+  searchForm.officeId =''
+  treeRef.value?.setcurrentkey(null)
   pagination.current = 1
-  loadData()
+  // loadData()
 }
 
 // 重置
